@@ -1,0 +1,338 @@
+\documentclass[headings=appendixprefix]{scrreprt}
+
+\usepackage[utf8x]{inputenc}  			% Langue fr
+\usepackage[T1]{fontenc}      			% Langue fr
+\usepackage[francais]{babel}  			% Langue fr
+\usepackage{amsmath}		  			% Symboles mathématiques
+\usepackage{textcomp,gensymb} 			% Symboles génériques (degré)
+\usepackage{setspace}		  			% Ajuster l'espacement des ligne
+\usepackage{graphicx}		  			% Insertion d'images
+\usepackage{array}		  	  			% Pour les tableaux
+\usepackage{multirow}		  			% Pour les tableaux
+\usepackage{float}			  			% Pour les objets flottants
+\usepackage{scrhack}		  			% Effacer le warning pour les float 
+\usepackage[flushleft]{threeparttable}	% Section de note à un tableau
+%Format et marges du document
+\usepackage[letterpaper, portrait, top=1in, bottom=1.25in, left=1.25in, right=1.25in]{geometry}
+
+\usepackage{hyperref}					% Pour permettre les hyperliens.
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue,
+} % Specify a color for hyperlinks
+
+\setkomafont{chapter}{\LARGE}
+\setkomafont{section}{\large}
+  
+\newcommand\tab[1][1cm]{\hspace*{#1}} %Ajout d'une commande pour faire des tabulations
+\setlength{\parindent}{0pt} %Pas d'indentation au début des paragraphes
+\tolerance=1 % Texte justifier 
+\emergencystretch=\maxdimen % Texte justifier 
+\hyphenpenalty=10000 % Sans césures
+\hbadness=10000 % Sans césures
+\renewcommand{\baselinestretch}{1.2} % Espacement des lignes 1.2
+\renewcommand{\chapterheadstartvskip}{} % Supprimer les espace avant les chapitres
+
+% Commande pour l'annexe
+\newcommand{\annexe}[2]{
+    \setcounter{chapter}{#1}
+    \setcounter{section}{0}
+    \chapter*{#2}
+    \addcontentsline{toc}{chapter}{#2}
+    \renewcommand\thesection{\Alph{section}}
+	\setcounter{secnumdepth}{1}
+}
+
+\begin{document}
+
+\renewcommand{\contentsname}
+{\Large Options de compilation pour un projet STM32 de base}
+
+% Table des matières avec espacement des lignes de 1 et sans no de page
+{\setstretch{1.0} \tableofcontents}\thispagestyle{empty}
+
+\clearpage\pagenumbering{arabic} %Démarrer la numérotation de page à partir d'ici
+
+%----------------------------------------------------------------------------------------
+%	OPTIONS
+%----------------------------------------------------------------------------------------
+
+\chapter{Liste d'options communes}
+\setcounter{secnumdepth}{0}
+
+%------------------------------------------------ 
+
+\section{-mcpu}
+Spécifie le nom du processeur ARM visé. GCC utilise ce paramètre pour déterminer l'architecture(-march) et le type(-mtune) du processeur à des fins d'optimisation.\\
+
+"-mcpu=cortex-m4" onfigure le processeur comme étant un Cortex-M4.\\
+
+%------------------------------------------------ 
+
+\section{-mthumb}
+Détermine le jeu d'instructions utilisé entre ARM(-marm) et Thumb(-mthumb).\\
+
+%------------------------------------------------ 
+
+\section{-mfloat-abi}
+Détermine l'interface binaire-programme pour les nombres à point flottant.\\
+
+Les valeurs possibles sont: "soft", "softfp" et "hard".\\
+Ex: "-mfloat-abi=hard"\\
+
+%------------------------------------------------ 
+
+\section{-mfpu}
+
+Détermine le périphérique de traitement des nombres à point flottant.\\
+
+Les valeurs possibles sont: "vfpv2", "vfpv3", "vfpv3-fp16", "vfpv3-d16", "vfpv3-d16-fp16", "vfpv3xd", "vfpv3xd-fp16", "neon-vfpv3", "neon-fp16", "vfpv4", "vfpv4-d16", "fpv4-sp-d16", "neon-vfpv4", "fpv5-d16", "fpv5-sp-d16", "fp-armv8", "neon-fp-armv8" et "crypto-neon-fp-armv8".\\
+
+Ex: "-mfpu=fpv4-sp-d16" pour les cortex-m4.\\
+
+%------------------------------------------------ 
+
+\newpage
+\section{-fmessage-length}
+
+"-fmessage-length=\textit{n}"\\
+Formate les messages d'erreur pour former des lignes de \textit{n} caractères. Si \textit{n}=0 alors les messages seront affichés sur une seule ligne.\\
+
+%------------------------------------------------
+
+\section{-fsigned-char}
+
+Permet au type char d'être signé.\\
+
+%------------------------------------------------
+
+\section{-ffunction-sections}
+
+Option d'optimisation qui place chaque fonction dans sa propre section dans le fichier de sortie. Le nom de la fonction détermine le nom de la section.\\
+
+Des problèmes de debug peuvent survenir si cette option est utilisée en même temps que l'option -g.\\
+
+%------------------------------------------------
+
+\section{-fdata-sections}
+
+Option d'optimisation qui place chaque objet de données dans sa propre section dans le fichier de sortie. Le nom de l'objet de données détermine le nom de la section.\\
+
+Des problèmes de debug peuvent survenir si cette option est utilisée en même temps que l'option -g.\\
+
+%------------------------------------------------
+
+\section{-fno-move-loop-invariants}
+
+Option qui prévient l'optimisation des variables sans variation dans les boucles. Cette option facilite le debug.\\
+
+Cette option est ajoutée automatiquement au profil d'optimisation -Og.\\
+
+%------------------------------------------------
+
+\section{-Wall}
+
+Option qui active les avertissements jugés discutables et qui sont facilement corrigés ou évités. Voir la fin du document pour la liste des avertissements activés.\\ 
+
+%------------------------------------------------
+
+\section{-Wextra}
+
+Option qui active des avertissements supplémentaires non ajoutés par "-Wall". Voir la fin du document pour la liste des avertissements activés.\\
+
+%------------------------------------------------
+
+\section{-O0}
+
+Profil d'optimisation qui réduit le temps de compilation et ne fait aucune optimisation.\\
+
+%------------------------------------------------
+
+\section{-g3}
+
+-g\textit{lvl}\\
+Spécifie le niveau de détail dans les informations disponibles lors du debug. Le niveau 3 inclut des informations supplémentaires comme la définitions des macros.\\
+
+Les valeurs possible de "lvl" vont de 0 à 3, 3 étant le niveau le plus détaillé.\\
+
+%------------------------------------------------ 
+
+\chapter{Liste d'options pour g++}
+\setcounter{secnumdepth}{0}
+
+%------------------------------------------------
+
+\section{-std}
+
+Détermine la version du standard pour le langage de programmation.\\
+
+Les standards sont disponibles dans la version de base ou la version en GNU du dialecte.\\
+EX: "c++98", "c++11", "c++14", "gnu++98", "gnu++11" ou "gnu++14".\\
+
+%------------------------------------------------
+
+\section{-fno-exceptions}
+
+Désactive la gestion des exceptions. Les exceptions sont, par défaut, activées en C++ et désactivées en C.\\
+
+%------------------------------------------------
+
+\section{-fno-rtti}
+
+Désactive la gérération des "run-time type information". Cette option affecte l'utilisation de dynamic\_cast et de l'opérateur typeid.\\
+
+%------------------------------------------------
+
+\section{-fno-use-cxa-atexit}
+
+Spécifie l'utilisation de la fonction atexit plutôt que \_\_cxa\_atexit pour enregistrer le destructeur des objets statiques. Cette option va à l'encontre du standard C++ concernant l'ordre d'appel des destructeurs des objets statiques. (Voir \url{http://mentorembedded.github.io/cxx-abi/abi.html#dso-dtor})\\
+
+%------------------------------------------------
+
+\section{-fno-threadsafe-statics}
+
+Désactive l'ajout de code pour rendre l'initialisation de variables locales statiques "thread-safe".
+
+%------------------------------------------------
+
+\chapter{Liste d'options pour gcc}
+\setcounter{secnumdepth}{0}
+
+%------------------------------------------------
+
+\section{-std}
+
+Détermine la version du standard pour le langage de programmation.\\
+
+Les standards sont disponibles dans la version de base ou la version en GNU du dialecte.\\
+EX: "c99", "c11", "gnu99" ou "gnu11".\\
+
+%------------------------------------------------
+
+\section{-ffreestanding}
+
+Spécifie que la librairie standard peut être inexistante dans le système visé et que le point de départ du programme n'est pas nécessairement la fonction main(). Équivalent à "-fno-hosted".\\
+
+%------------------------------------------------
+
+\chapter{Liste d'options pour le linker}
+\setcounter{secnumdepth}{0}
+
+%------------------------------------------------
+
+\section{-nostartfiles}\label{nostartfiles}
+
+Prévient l'utilisation des fichiers de démarrage standards par l'éditeur de liens.\\
+
+%------------------------------------------------
+
+\section{-Xlinker}
+
+-Xlinker \textit{option}\\
+Permet de passer une option à l'éditeur de liens qui n'est pas reconnue par GCC.\\
+
+%------------------------------------------------
+
+\section{--gc-sections}
+
+Active le récupérateur de mémoire(garbage collector) pour omettre les sections inutilisées.\\
+
+Utilisation : -Xlinker --gc-sections\\
+
+%------------------------------------------------
+
+\section{-L}
+
+-L\textit{searchdir}\\
+Ajoute le chemin d'accès \textit{searchdir} à la recherche des librairies et des "linker scripts".\\
+
+%------------------------------------------------
+
+\section{-Wl}
+
+-Wl,\textit{option}\\
+Permet de passer une option à l'éditeur de liens. Si l'option contient des virgules, l'option sera séparée en plusieurs options. Il est possible d'utiliser cette fonctionnalité pour passer des paramètres à l'option.\\
+
+Ex: "-Wl,-Map,output.map" passera l'option "-Map output.map" à l'éditeur de liens.\\
+
+%------------------------------------------------
+
+\newpage
+\section{--specs}
+
+--specs=\textit{file.specs}\\
+GCC effectue son travail en invoquant une séquence de programmes dans un ordre précis. Ce comportement est contrôlé par les "spec strings". Les "spec strings" par défault peuvent être modifiées grâce à la commande --specs en spécifiant un nouveau fichier ".specs".\\
+
+%------------------------------------------------
+
+\annexe{1}{Annexes}
+\section{Avertissements activés par -Wall}
+
+-Waddress\\   
+-Warray-bounds=1 (only with -O2)\\
+-Wbool-compare\\
+-Wbool-operation\\
+-Wc++11-compat  -Wc++14-compat\\
+-Wchar-subscripts\\
+-Wcomment\\
+-Wduplicate-decl-specifier (C and Objective-C only)\\
+-Wenum-compare (in C/ObjC; this is on by default in C++)\\
+-Wformat\\
+-Wint-in-bool-context\\
+-Wimplicit (C and Objective-C only)\\
+-Wimplicit-int (C and Objective-C only)\\
+-Wimplicit-function-declaration (C and Objective-C only)\\
+-Winit-self (only for C++)\\
+-Wlogical-not-parentheses\\
+-Wmain (only for C/ObjC and unless -ffreestanding)\\
+-Wmaybe-uninitialized\\
+-Wmemset-elt-size\\
+-Wmemset-transposed-args\\
+-Wmisleading-indentation (only for C/C++)\\
+-Wmissing-braces (only for C/ObjC)\\
+-Wnarrowing (only for C++)\\
+-Wnonnull\\
+-Wnonnull-compare\\
+-Wopenmp-simd\\
+-Wparentheses\\
+-Wpointer-sign\\
+-Wreorder\\
+-Wreturn-type\\
+-Wsequence-point\\
+-Wsign-compare (only in C++)\\
+-Wsizeof-pointer-memaccess\\
+-Wstrict-aliasing\\
+-Wstrict-overflow=1\\
+-Wswitch\\
+-Wtautological-compare\\
+-Wtrigraphs\\
+-Wuninitialized\\
+-Wunknown-pragmas\\
+-Wunused-function\\
+-Wunused-label\\
+-Wunused-value\\
+-Wunused-variable\\
+-Wvolatile-register-var
+
+\newpage
+
+\section{Avertissements activés par -Wextra}
+
+-Wclobbered\\
+-Wempty-body\\
+-Wignored-qualifiers\\
+-Wimplicit-fallthrough=3\\
+-Wmissing-field-initializers\\
+-Wmissing-parameter-type (C only)\\
+-Wold-style-declaration (C only)\\
+-Woverride-init\\
+-Wsign-compare (C only)\\
+-Wtype-limits\\
+-Wuninitialized\\
+-Wshift-negative-value (in C++03 and in C99 and newer)\\
+-Wunused-parameter (only with -Wunused or -Wall)\\
+-Wunused-but-set-parameter (only with -Wunused or -Wall)\\
+
+\end{document}
